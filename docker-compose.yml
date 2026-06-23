@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=peluqueria_db
+      - POSTGRES_USER=peluquero
+      - POSTGRES_PASSWORD=mi_clave_segura
+    ports:
+      - "5432:5432"
+
+  web:
+    build: .
+    command: python backend/manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - DB_NAME=peluqueria_db
+      - DB_USER=peluquero
+      - DB_PASSWORD=mi_clave_segura
+      - DB_HOST=db
+      - DB_PORT=5432
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
